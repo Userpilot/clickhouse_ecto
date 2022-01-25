@@ -88,7 +88,7 @@ defmodule ClickhouseEcto.Connection do
     Clickhousex.query(conn, statement, params, options)
   end
 
-  def ddl_logs(result) do
+  def ddl_logs(_result) do
     []
   end
 
@@ -137,10 +137,12 @@ defmodule ClickhouseEcto.Connection do
   @doc false
   def delete_all(query), do: SQL.delete_all(query)
 
+  def insert(prefix, table, header, rows, on_conflict, returning, placeholder \\ [])
+
   def insert(prefix, table, header, rows, on_conflict, returning, []),
     do: SQL.insert(prefix, table, header, rows, on_conflict, returning)
 
-  def insert(prefix, table, header, rows, on_conflict, returning, _placeholder),
+  def insert(_prefix, _table, _header, _rows, _on_conflict, _returning, _placeholder),
     do: raise("Clickhouse_ecto does not support placeholder in `insert_all`")
 
   def update(prefix, table, fields, filters, returning),

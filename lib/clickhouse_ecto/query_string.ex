@@ -93,6 +93,7 @@ defmodule ClickhouseEcto.QueryString do
   def on_join_expr({:==, _, [{{_, _, [_, column]}, _, _}, _]}) when is_atom(column) do
     " USING " <> Atom.to_string(column)
   end
+
   def on_join_expr(true), do: ""
 
   def join_qual(:inner), do: " INNER JOIN "
@@ -154,15 +155,19 @@ defmodule ClickhouseEcto.QueryString do
   end
 
   defp hints([_ | _] = hints) do
-    hint_list = Enum.map(hints, &hint/1)
-    |> Enum.intersperse(", ")
+    hint_list =
+      Enum.map(hints, &hint/1)
+      |> Enum.intersperse(", ")
 
     [" ", hint_list]
   end
+
   defp hints([]), do: []
 
   defp hint(hint_str) when is_binary(hint_str), do: hint_str
-  defp hint({key, val}) when is_atom(key) and is_integer(val), do: [Atom.to_string(key), " ", Integer.to_string(val)]
+
+  defp hint({key, val}) when is_atom(key) and is_integer(val),
+    do: [Atom.to_string(key), " ", Integer.to_string(val)]
 
   def boolean(_name, [], _sources, _query), do: []
 
@@ -258,10 +263,8 @@ defmodule ClickhouseEcto.QueryString do
     Connection.all(query)
   end
 
-  def expr({:fragment, _, [kw]}, sources, query) when is_list(kw) or tuple_size(kw) == 3 do
-    Enum.reduce(kw, query, fn {key, {op, val}}, query ->
-      expr({op, nil, [key, val]}, sources, query)
-    end)
+  def expr({:fragment, _, [kw]}, _sources, query) when is_list(kw) or tuple_size(kw) == 3 do
+    Helpers.error!(query, "ClickHouse adapter does not support keyword or interpolated fragments")
   end
 
   def expr({:fragment, _, parts}, sources, query) do
