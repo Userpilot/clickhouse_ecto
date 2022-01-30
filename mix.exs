@@ -27,7 +27,7 @@ defmodule ClickhouseEcto.Mixfile do
       {:ecto_sql, "~> 3.0"},
       {:clickhousex,
        git: "https://github.com/Userpilot/clickhousex.git",
-       ref: "0939578b38ffb36223fd42593d69874ee26ae63d"},
+       ref: "92d1ee095dcad0d4fb33771e60fd8b60b0d59925"},
       {:ex_doc, "~> 0.22", only: :dev},
       {:db_connection, "~> 2.4.1", override: true}
     ]
