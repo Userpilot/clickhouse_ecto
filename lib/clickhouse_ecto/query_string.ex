@@ -93,6 +93,7 @@ defmodule ClickhouseEcto.QueryString do
   def on_join_expr({:==, _, [{{_, _, [_, column]}, _, _}, _]}) when is_atom(column) do
     " USING " <> Atom.to_string(column)
   end
+
   def on_join_expr(true), do: ""
 
   def join_qual(:inner), do: " INNER JOIN "
@@ -143,26 +144,30 @@ defmodule ClickhouseEcto.QueryString do
 
   def limit(%Query{limit: nil}, _sources), do: []
 
-  def limit(%Query{limit: %QueryExpr{expr: expr}} = query, sources) do
+  def limit(%Query{limit: %{expr: expr}} = query, sources) do
     [" LIMIT ", expr(expr, sources, query)]
   end
 
   def offset(%{offset: nil}, _sources), do: []
 
-  def offset(%{offset: %QueryExpr{expr: expr}} = query, sources) do
+  def offset(%Query{offset: %{expr: expr}} = query, sources) do
     [" OFFSET " | expr(expr, sources, query)]
   end
 
   defp hints([_ | _] = hints) do
-    hint_list = Enum.map(hints, &hint/1)
-    |> Enum.intersperse(", ")
+    hint_list =
+      Enum.map(hints, &hint/1)
+      |> Enum.intersperse(", ")
 
     [" ", hint_list]
   end
+
   defp hints([]), do: []
 
   defp hint(hint_str) when is_binary(hint_str), do: hint_str
-  defp hint({key, val}) when is_atom(key) and is_integer(val), do: [Atom.to_string(key), " ", Integer.to_string(val)]
+
+  defp hint({key, val}) when is_atom(key) and is_integer(val),
+    do: [Atom.to_string(key), " ", Integer.to_string(val)]
 
   def boolean(_name, [], _sources, _query), do: []
 

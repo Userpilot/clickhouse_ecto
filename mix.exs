@@ -24,10 +24,11 @@ defmodule ClickhouseEcto.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ecto_sql, "~> 3.6"},
+      {:ecto_sql, "~> 3.11.0"},
       {:clickhousex, git: "https://github.com/plausible/clickhousex"},
       {:ex_doc, "~> 0.19", only: :dev},
-      {:db_connection, "~> 2.4.2", override: true}
+      {:db_connection, "~> 2.4.2", override: true},
+      {:ssl_verify_fun, "~> 1.1.7", override: true}
     ]
   end
 
